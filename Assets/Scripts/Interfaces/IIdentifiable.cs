@@ -1,7 +1,7 @@
 ﻿interface IIdentifiable {
     
-    string GetIdentifier();
+    string GetIdentifier ();
 
-    string InitializeIdentifier();
+    string InitializeIdentifier ();
 
 }

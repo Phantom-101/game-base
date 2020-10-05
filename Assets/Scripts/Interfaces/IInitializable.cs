@@ -1,7 +1,7 @@
 interface IInitializable {
     
-    bool CanInitialize();
+    bool CanInitialize ();
 
-    void Initialize();
+    void Initialize ();
 
 }

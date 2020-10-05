@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class InstanceManager : MonoBehaviour, IInitializable {
@@ -9,21 +8,25 @@ public class InstanceManager : MonoBehaviour, IInitializable {
     [SerializeField] private static InstanceManager singleton;
     [SerializeField] private bool initialized = false;
 
-    void Awake() {
-        Initialize();
+    void Awake () {
+        Initialize ();
     }
 
-    public bool CanInitialize() {
+    public bool CanInitialize () {
         return !initialized;
     }
 
-    public void Initialize() {
-        if (!CanInitialize()) return;
+    public void Initialize () {
+        if (!CanInitialize ()) return;
         singleton = this;
     }
 
-    public static InstanceManager GetSingleton() {
+    public static InstanceManager GetSingleton () {
         return singleton;
+    }
+
+    public List<Instance> GetGameObjectInstances (GameObject gameObject) {
+        return GameObjectToInstances[gameObject] ?? new List<Instance> ();
     }
 
 }

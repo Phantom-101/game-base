@@ -2,8 +2,8 @@ using System;
 
 interface IInstance {
 
-    Prototype GetPrototype();
+    Prototype GetPrototype ();
 
-    Type GetPrototypeType();
+    Type GetPrototypeType ();
 
 }
