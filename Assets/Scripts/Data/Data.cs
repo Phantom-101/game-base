@@ -14,7 +14,7 @@ public class Data : IIdentifiable, IData {
         return identifier;
     }
 
-    public Data GetData () {
+    public virtual Data GetData () {
         return this;
     }
 

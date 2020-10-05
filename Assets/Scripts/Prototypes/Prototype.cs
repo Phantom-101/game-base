@@ -14,11 +14,11 @@ public class Prototype : IIdentifiable, IPrototype {
         return identifier;
     }
 
-    public Instance GetInstance () {
+    public virtual Instance GetInstance () {
         return new Instance ();
     }
 
-    public Type GetInstanceType () {
+    public virtual Type GetInstanceType () {
         return typeof (Instance);
     }
 

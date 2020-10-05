@@ -5,11 +5,11 @@ public class Instance : Data, IInstance {
 
     [SerializeField] private Prototype prototype;
 
-    public Prototype GetPrototype () {
+    public virtual Prototype GetPrototype () {
         return prototype;
     }
 
-    public Type GetPrototypeType () {
+    public virtual Type GetPrototypeType () {
         return typeof (Prototype);
     }
 

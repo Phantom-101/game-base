@@ -19,6 +19,9 @@ public class DataManager : IInitializable {
 
         singleton = this;
 
+        GameObjectToData = new Dictionary<GameObject, List<Data>> ();
+        TypeToData = new Dictionary<Type, List<Data>> ();
+
         initialized = true;
     }
 
@@ -32,18 +35,16 @@ public class DataManager : IInitializable {
     }
 
     public List<Data> GetData (GameObject gameObject) {
-        List<Data> ret = new List<Data> ();
-        GameObjectToData.TryGetValue (gameObject, out ret);
+        GameObjectToData.TryGetValue (gameObject, out List<Data> ret);
         return ret;
     }
 
     public List<Data> GetData (Type type) {
-        List<Data> ret = new List<Data> ();
-        TypeToData.TryGetValue (type, out ret);
+        TypeToData.TryGetValue (type, out List<Data> ret);
         return ret;
     }
 
-    public void RegisterInstance (GameObject gameObject, Data data) {
+    public void AttachInstance (GameObject gameObject, Data data) {
         if (!GameObjectToData.ContainsKey (gameObject)) GameObjectToData[gameObject] = new List<Data> ();
         GameObjectToData[gameObject].Add (data);
 
@@ -51,7 +52,7 @@ public class DataManager : IInitializable {
         TypeToData[data.GetType ()].Add (data);
     }
 
-    public void RemoveInstance (GameObject gameObject, Data data) {
+    public void DetachInstance (GameObject gameObject, Data data) {
         if (!GameObjectToData.ContainsKey (gameObject)) GameObjectToData[gameObject] = new List<Data> ();
         GameObjectToData[gameObject].Remove (data);
 
