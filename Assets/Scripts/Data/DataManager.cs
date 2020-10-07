@@ -39,25 +39,49 @@ public class DataManager : IInitializable {
         return ret;
     }
 
-    public List<Data> GetData (Type type) {
-        TypeToData.TryGetValue (type, out List<Data> ret);
+    public List<Data> GetData<T> (GameObject gameObject) {
+        List<Data> data = GetData (gameObject);
+        List<Data> ret = new List<Data> ();
+
+        foreach (Data d in data)
+            if (d.GetType () == typeof (T) || d.GetType ().IsSubclassOf (typeof (T)))
+                ret.Add (d);
+
+        return ret;
+    }
+
+    public List<Data> GetData<T> () {
+        List<Data> ret = new List<Data> ();
+
+        foreach (Type type in TypeToData.Keys)
+            if (type == typeof (T) || type.IsSubclassOf (typeof (T)))
+                ret.AddRange (TypeToData[type]);
+
         return ret;
     }
 
     public void AttachInstance (GameObject gameObject, Data data) {
-        if (!GameObjectToData.ContainsKey (gameObject)) GameObjectToData[gameObject] = new List<Data> ();
+        TryInitializeDictionaryEntry (gameObject);
         GameObjectToData[gameObject].Add (data);
 
-        if (!TypeToData.ContainsKey (data.GetType ())) TypeToData[data.GetType ()] = new List<Data> ();
+        TryInitializeDictionaryEntry (data.GetType ());
         TypeToData[data.GetType ()].Add (data);
     }
 
     public void DetachInstance (GameObject gameObject, Data data) {
-        if (!GameObjectToData.ContainsKey (gameObject)) GameObjectToData[gameObject] = new List<Data> ();
+        TryInitializeDictionaryEntry (gameObject);
         GameObjectToData[gameObject].Remove (data);
 
-        if (!TypeToData.ContainsKey (data.GetType ())) TypeToData[data.GetType ()] = new List<Data> ();
+        TryInitializeDictionaryEntry (data.GetType ());
         TypeToData[data.GetType ()].Remove (data);
+    }
+
+    void TryInitializeDictionaryEntry (GameObject gameObject) {
+        if (!GameObjectToData.ContainsKey (gameObject)) GameObjectToData[gameObject] = new List<Data> ();
+    }
+
+    void TryInitializeDictionaryEntry (Type type) {
+        if (!TypeToData.ContainsKey (type)) TypeToData[type] = new List<Data> ();
     }
 
 }
