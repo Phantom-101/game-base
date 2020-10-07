@@ -5,6 +5,7 @@ using UnityEngine;
 public class DataManager : IInitializable {
 
     public Dictionary<GameObject, List<Data>> GameObjectToData;
+    public Dictionary<GameObject, Dictionary<Type, List<Data>>> GameObjectToTypeToData;
     public Dictionary<Type, List<Data>> TypeToData;
 
     [SerializeField] private static DataManager singleton;
@@ -20,6 +21,7 @@ public class DataManager : IInitializable {
         singleton = this;
 
         GameObjectToData = new Dictionary<GameObject, List<Data>> ();
+        GameObjectToTypeToData = new Dictionary<GameObject, Dictionary<Type, List<Data>>> ();
         TypeToData = new Dictionary<Type, List<Data>> ();
 
         initialized = true;
@@ -35,34 +37,45 @@ public class DataManager : IInitializable {
     }
 
     public List<Data> GetData (GameObject gameObject) {
-        GameObjectToData.TryGetValue (gameObject, out List<Data> ret);
-        return ret;
+        TryInitializeDictionaryEntry (gameObject);
+
+        return GameObjectToData[gameObject];
     }
 
     public List<Data> GetData<T> (GameObject gameObject) {
-        List<Data> data = GetData (gameObject);
-        List<Data> ret = new List<Data> ();
+        Type type = typeof (T);
 
-        foreach (Data d in data)
-            if (d.GetType () == typeof (T) || d.GetType ().IsSubclassOf (typeof (T)))
-                ret.Add (d);
+        TryInitializeDictionaryEntry (gameObject, type);
 
-        return ret;
+        return GameObjectToTypeToData[gameObject][type];
+    }
+
+    public List<Data> GetData (GameObject gameObject, Type type) {
+        TryInitializeDictionaryEntry (gameObject, type);
+
+        return GameObjectToTypeToData[gameObject][type];
     }
 
     public List<Data> GetData<T> () {
-        List<Data> ret = new List<Data> ();
+        Type type = typeof (T);
 
-        foreach (Type type in TypeToData.Keys)
-            if (type == typeof (T) || type.IsSubclassOf (typeof (T)))
-                ret.AddRange (TypeToData[type]);
+        TryInitializeDictionaryEntry (type);
 
-        return ret;
+        return TypeToData[type];
+    }
+
+    public List<Data> GetData (Type type) {
+        TryInitializeDictionaryEntry (type);
+
+        return TypeToData[type];
     }
 
     public void AttachInstance (GameObject gameObject, Data data) {
         TryInitializeDictionaryEntry (gameObject);
         GameObjectToData[gameObject].Add (data);
+
+        TryInitializeDictionaryEntry (gameObject, data.GetType ());
+        GameObjectToTypeToData[gameObject][data.GetType ()].Add (data);
 
         TryInitializeDictionaryEntry (data.GetType ());
         TypeToData[data.GetType ()].Add (data);
@@ -72,12 +85,21 @@ public class DataManager : IInitializable {
         TryInitializeDictionaryEntry (gameObject);
         GameObjectToData[gameObject].Remove (data);
 
+        TryInitializeDictionaryEntry (gameObject, data.GetType ());
+        GameObjectToTypeToData[gameObject][data.GetType ()].Remove (data);
+
         TryInitializeDictionaryEntry (data.GetType ());
         TypeToData[data.GetType ()].Remove (data);
     }
 
     void TryInitializeDictionaryEntry (GameObject gameObject) {
         if (!GameObjectToData.ContainsKey (gameObject)) GameObjectToData[gameObject] = new List<Data> ();
+        if (!GameObjectToTypeToData.ContainsKey (gameObject)) GameObjectToTypeToData[gameObject] = new Dictionary<Type, List<Data>> ();
+    }
+
+    void TryInitializeDictionaryEntry (GameObject gameObject, Type type) {
+        TryInitializeDictionaryEntry (gameObject);
+        if (!GameObjectToTypeToData[gameObject].ContainsKey (type)) GameObjectToTypeToData[gameObject][type] = new List<Data> ();
     }
 
     void TryInitializeDictionaryEntry (Type type) {
