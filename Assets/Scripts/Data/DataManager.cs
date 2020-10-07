@@ -74,22 +74,32 @@ public class DataManager : IInitializable {
         TryInitializeDictionaryEntry (gameObject);
         GameObjectToData[gameObject].Add (data);
 
-        TryInitializeDictionaryEntry (gameObject, data.GetType ());
-        GameObjectToTypeToData[gameObject][data.GetType ()].Add (data);
+        Type t = data.GetType ();
+        while (t != null) {
+            TryInitializeDictionaryEntry (gameObject, t);
+            GameObjectToTypeToData[gameObject][t].Add (data);
 
-        TryInitializeDictionaryEntry (data.GetType ());
-        TypeToData[data.GetType ()].Add (data);
+            TryInitializeDictionaryEntry (t);
+            TypeToData[t].Add (data);
+
+            t = t.BaseType;
+        }
     }
 
     public void DetachInstance (GameObject gameObject, Data data) {
         TryInitializeDictionaryEntry (gameObject);
         GameObjectToData[gameObject].Remove (data);
 
-        TryInitializeDictionaryEntry (gameObject, data.GetType ());
-        GameObjectToTypeToData[gameObject][data.GetType ()].Remove (data);
+        Type t = data.GetType ();
+        while (t != null) {
+            TryInitializeDictionaryEntry (gameObject, t);
+            GameObjectToTypeToData[gameObject][t].Remove (data);
 
-        TryInitializeDictionaryEntry (data.GetType ());
-        TypeToData[data.GetType ()].Remove (data);
+            TryInitializeDictionaryEntry (t);
+            TypeToData[t].Remove (data);
+
+            t = t.BaseType;
+        }
     }
 
     void TryInitializeDictionaryEntry (GameObject gameObject) {
