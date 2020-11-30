@@ -1,5 +1,0 @@
-﻿interface IData {
-
-    Data GetData ();
-
-}
