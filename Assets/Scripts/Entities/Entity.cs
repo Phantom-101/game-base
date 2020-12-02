@@ -10,11 +10,11 @@ public class Entity : IEntity {
         throw new System.NotImplementedException ();
     }
 
-    public bool AddDatum (IEntityDatum datum) {
+    public bool AddData (IEntityData data) {
         throw new System.NotImplementedException ();
     }
 
-    public bool AddDatum<T> () {
+    public bool AddData<T> () {
         throw new System.NotImplementedException ();
     }
 
@@ -34,27 +34,27 @@ public class Entity : IEntity {
         throw new System.NotImplementedException ();
     }
 
+    public List<IEntityBehaviour> GetAllBehaviours () {
+        throw new System.NotImplementedException ();
+    }
+
+    public List<IEntityBehaviour> GetAllBehaviours<T> (bool inherited) {
+        throw new System.NotImplementedException ();
+    }
+
+    public List<IEntityData> GetAllData () {
+        throw new System.NotImplementedException ();
+    }
+
+    public List<IEntityData> GetAllData<T> (bool inherited) {
+        throw new System.NotImplementedException ();
+    }
+
     public IEntityBehaviour GetBehaviour<T> (bool inherited) {
         throw new System.NotImplementedException ();
     }
 
-    public List<IEntityBehaviour> GetBehaviours () {
-        throw new System.NotImplementedException ();
-    }
-
-    public List<IEntityBehaviour> GetBehaviours<T> (bool inherited) {
-        throw new System.NotImplementedException ();
-    }
-
-    public List<IEntityDatum> GetData<T> (bool inherited) {
-        throw new System.NotImplementedException ();
-    }
-
-    public List<IEntityDatum> GetDatum () {
-        throw new System.NotImplementedException ();
-    }
-
-    public IEntityDatum GetDatum<T> (bool inherited) {
+    public IEntityData GetData<T> (bool inherited) {
         throw new System.NotImplementedException ();
     }
 
@@ -82,11 +82,19 @@ public class Entity : IEntity {
         throw new System.NotImplementedException ();
     }
 
-    public bool PossessesDatum (IEntityDatum datum) {
+    public bool PossessesData (IEntityData data) {
         throw new System.NotImplementedException ();
     }
 
-    public bool PossessesDatum<T> (bool inherited) {
+    public bool PossessesData<T> (bool inherited) {
+        throw new System.NotImplementedException ();
+    }
+
+    public bool RemoveAllBehaviours<T> (bool inherited) {
+        throw new System.NotImplementedException ();
+    }
+
+    public bool RemoveAllData<T> (bool inherited) {
         throw new System.NotImplementedException ();
     }
 
@@ -98,19 +106,11 @@ public class Entity : IEntity {
         throw new System.NotImplementedException ();
     }
 
-    public bool RemoveBehaviours<T> (bool inherited) {
+    public bool RemoveData (IEntityData data) {
         throw new System.NotImplementedException ();
     }
 
     public bool RemoveData<T> (bool inherited) {
-        throw new System.NotImplementedException ();
-    }
-
-    public bool RemoveDatum (IEntityDatum datum) {
-        throw new System.NotImplementedException ();
-    }
-
-    public bool RemoveDatum<T> (bool inherited) {
         throw new System.NotImplementedException ();
     }
 
