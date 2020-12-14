@@ -92,7 +92,7 @@ public interface IEntity {
     /// </summary>
     /// <typeparam name="T">The type of the behaviour to add to the entity.</typeparam>
     /// <returns>A boolean denoting whether or not a new behaviour of type <typeparamref name="T"/> has been added successfully.</returns>
-    bool AddBehaviour<T> ();
+    bool AddBehaviour<T> () where T : IEntityBehaviour;
 
     /// <summary>
     /// Removes <paramref name="behaviour"/> from the entity.
@@ -180,7 +180,7 @@ public interface IEntity {
     /// </summary>
     /// <typeparam name="T">The type of the data to add to the entity.</typeparam>
     /// <returns>A boolean denoting whether or not a new data of type <typeparamref name="T"/> has been added successfully.</returns>
-    bool AddData<T> ();
+    bool AddData<T> () where T : IEntityData;
 
     /// <summary>
     /// Removes <paramref name="data"/> from the entity.

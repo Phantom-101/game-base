@@ -1,21 +1,88 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class Entity : IEntity {
 
-    public bool AddBehaviour (IEntityBehaviour behaviour) {
-        throw new System.NotImplementedException ();
+    private List<IEntityBehaviour> _behaviours;
+    private Dictionary<Type, List<IEntityBehaviour>> _typedBehaviours;
+    private Dictionary<Type, List<IEntityBehaviour>> _inheritedTypedBehaviours;
+
+    private List<IEntityData> _data;
+    private Dictionary<Type, List<IEntityData>> _typedData;
+    private Dictionary<Type, List<IEntityData>> _inheritedTypedData;
+
+    public Entity () {
+
+        _behaviours = new List<IEntityBehaviour> ();
+        _typedBehaviours = new Dictionary<Type, List<IEntityBehaviour>> ();
+        _inheritedTypedBehaviours = new Dictionary<Type, List<IEntityBehaviour>> ();
+
+        _data = new List<IEntityData> ();
+        _typedData = new Dictionary<Type, List<IEntityData>> ();
+        _inheritedTypedData = new Dictionary<Type, List<IEntityData>> ();
+
     }
 
-    public bool AddBehaviour<T> () {
-        throw new System.NotImplementedException ();
+    public bool AddBehaviour (IEntityBehaviour behaviour) {
+
+        List<EntityAttachmentCollisionMode> collisionModes = behaviour.GetAttachmentCollisionModes ();
+        bool collidesWithSelf = collisionModes.Contains (EntityAttachmentCollisionMode.Self),
+            collidesWithInherited = collisionModes.Contains (EntityAttachmentCollisionMode.Inherited);
+
+        Type t = behaviour.GetType ();
+
+        if (collidesWithSelf && _typedBehaviours.GetValueOrDefault (t, new List<IEntityBehaviour> ()).Count > 0) return false;
+        if (collidesWithInherited && _inheritedTypedBehaviours.GetValueOrDefault (t, new List<IEntityBehaviour> ()).Count > 0) return false;
+
+        _behaviours.Add (behaviour);
+        _typedBehaviours.Initialize (t, new List<IEntityBehaviour> ());
+        _typedBehaviours[t].Add (behaviour);
+        Type cur = t;
+        while (cur.BaseType != null) {
+            cur = cur.BaseType;
+            _inheritedTypedBehaviours.Initialize (cur, new List<IEntityBehaviour> ());
+            _inheritedTypedBehaviours[cur].Add (behaviour);
+        }
+
+        return true;
+
+    }
+
+    public bool AddBehaviour<T> () where T : IEntityBehaviour {
+
+        return AddBehaviour (Activator.CreateInstance<T> ());
+
     }
 
     public bool AddData (IEntityData data) {
-        throw new System.NotImplementedException ();
+
+        List<EntityAttachmentCollisionMode> collisionModes = data.GetAttachmentCollisionModes ();
+        bool collidesWithSelf = collisionModes.Contains (EntityAttachmentCollisionMode.Self),
+            collidesWithInherited = collisionModes.Contains (EntityAttachmentCollisionMode.Inherited);
+
+        Type t = data.GetType ();
+
+        if (collidesWithSelf && _typedData.GetValueOrDefault (t, new List<IEntityData> ()).Count > 0) return false;
+        if (collidesWithInherited && _inheritedTypedData.GetValueOrDefault (t, new List<IEntityData> ()).Count > 0) return false;
+
+        _data.Add (data);
+        _typedData.Initialize (t, new List<IEntityData> ());
+        _typedData[t].Add (data);
+        Type cur = t;
+        while (cur.BaseType != null) {
+            cur = cur.BaseType;
+            _inheritedTypedData.Initialize (cur, new List<IEntityData> ());
+            _inheritedTypedData[cur].Add (data);
+        }
+
+        return true;
+
     }
 
-    public bool AddData<T> () {
-        throw new System.NotImplementedException ();
+    public bool AddData<T> () where T : IEntityData {
+
+        return AddData (Activator.CreateInstance<T> ());
+
     }
 
     public int CountBehaviours () {
