@@ -24,37 +24,37 @@ public interface IEntity {
     string GetIdentifier ();
 
     /// <summary>
-    /// Returns the entity's superentity, i.e. its parent.
+    /// Returns the entity's parent.
     /// </summary>
-    /// <returns>An instance of a class implementing IEntity representing the entity's superentity.</returns>
-    IEntity GetSuperEntity ();
+    /// <returns>An instance of a class implementing IEntity representing the entity's parent.</returns>
+    IEntity GetParent ();
 
     /// <summary>
-    /// Sets the super entity of the entity.
+    /// Sets the parent of the entity.
     /// </summary>
-    /// <param name="super">The new super entity of the entity.</param>
-    /// <returns>A boolean denoting whether or not the super entity has been set successfully.</returns>
-    bool SetSuperEntity (IEntity super);
+    /// <param name="parent">The new parent of the entity.</param>
+    /// <returns>A boolean denoting whether or not the parent has been set successfully.</returns>
+    bool SetParent (IEntity parent);
 
     /// <summary>
-    /// Returns the entity's subentities, i.e. its children.
+    /// Returns the entity's children.
     /// </summary>
-    /// <returns>A list of instances of classes implementing IEntity representing the entity's subentities.</returns>
-    List<IEntity> GetSubEntities ();
+    /// <returns>A list of instances of classes implementing IEntity representing the entity's children.</returns>
+    List<IEntity> GetChildren ();
 
     /// <summary>
-    /// Adds <paramref name="sub"/> as a sub entity;
+    /// Adds <paramref name="child"/> as a child.
     /// </summary>
-    /// <param name="sub">The entity to add as a sub entity.</param>
-    /// <returns>A boolean denoting whether or not <paramref name="sub"/> was added as a sub entity successfully.</returns>
-    bool AddSubEntity (IEntity sub);
+    /// <param name="child">The entity to add as a child.</param>
+    /// <returns>A boolean denoting whether or not <paramref name="child"/> was added as a child successfully.</returns>
+    bool AddChild (IEntity child);
 
     /// <summary>
-    /// Removes <paramref name="sub"/> as a sub entity;
+    /// Removes <paramref name="child"/> as a child;
     /// </summary>
-    /// <param name="sub">The entity to remove as a sub entity.</param>
-    /// <returns>A boolean denoting whether or not <paramref name="sub"/> was removed as a sub entity successfully.</returns>
-    bool RemoveSubEntity (IEntity sub);
+    /// <param name="child">The entity to remove as a child.</param>
+    /// <returns>A boolean denoting whether or not <paramref name="child"/> was removed as a child successfully.</returns>
+    bool RemoveChild (IEntity child);
 
     /// <summary>
     /// Returns the behaviours attached to the entity.

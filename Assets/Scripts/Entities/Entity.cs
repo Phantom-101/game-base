@@ -8,8 +8,8 @@ public class Entity : IEntity {
     [SerializeField] private string _name;
     [SerializeField] private string _identifier;
 
-    [SerializeReference] private IEntity _super;
-    [SerializeReference] private List<IEntity> _subs;
+    [SerializeReference] private IEntity _parent;
+    [SerializeReference] private List<IEntity> _children;
 
     [SerializeReference] private List<IEntityBehaviour> _behaviours;
     private Dictionary<Type, List<IEntityBehaviour>> _typedBehaviours;
@@ -25,19 +25,19 @@ public class Entity : IEntity {
 
     public Entity (string name, string identifier) : this (name, identifier, null) { }
 
-    public Entity (string name, IEntity super) : this (name, Guid.NewGuid ().ToString (), super) { }
+    public Entity (string name, IEntity parent) : this (name, Guid.NewGuid ().ToString (), parent) { }
 
-    public Entity (string name, string identifier, IEntity super) : this (name, identifier, super, new List<IEntityBehaviour> (), new List<IEntityData> ()) { }
+    public Entity (string name, string identifier, IEntity parent) : this (name, identifier, parent, new List<IEntityBehaviour> (), new List<IEntityData> ()) { }
 
     public Entity (string name, string identifier, List<IEntityBehaviour> behaviours, List<IEntityData> data) : this (name, identifier, null, behaviours, data) { }
 
-    public Entity (string name, string identifier, IEntity super, List<IEntityBehaviour> behaviours, List<IEntityData> data) {
+    public Entity (string name, string identifier, IEntity parent, List<IEntityBehaviour> behaviours, List<IEntityData> data) {
 
         _name = name;
         _identifier = identifier;
 
-        _subs = new List<IEntity> ();
-        SetSuperEntity (super);
+        _children = new List<IEntity> ();
+        SetParent (parent);
 
         _behaviours = new List<IEntityBehaviour> ();
         _typedBehaviours = new Dictionary<Type, List<IEntityBehaviour>> ();
@@ -88,6 +88,18 @@ public class Entity : IEntity {
 
     }
 
+    public bool AddChild (IEntity child) {
+
+        // If child is already a children
+        if (_children.Contains (child)) return false;
+
+        child.GetParent ().RemoveChild (child);
+        _children.Add (child);
+        child.SetParent (this);
+        return true;
+
+    }
+
     public bool AddData (IEntityData data) {
 
         // Get collision modes of the attachment
@@ -120,17 +132,6 @@ public class Entity : IEntity {
     public bool AddData<T> () where T : IEntityData {
 
         return AddData (Activator.CreateInstance<T> ());
-
-    }
-
-    [Obsolete ("Use subEntity.SetSuperEntity(superEntity) instead. This is strictly for internal purposes and using this may cause unwanted behaviours in your code.")]
-    [EditorBrowsable (EditorBrowsableState.Never)]
-    public bool AddSubEntity (IEntity sub) {
-
-        if (_subs.Contains (sub)) return false;
-
-        _subs.Add (sub);
-        return true;
 
     }
 
@@ -218,15 +219,15 @@ public class Entity : IEntity {
 
     }
 
-    public List<IEntity> GetSubEntities () {
+    public List<IEntity> GetChildren () {
 
-        return _subs;
+        return _children;
 
     }
 
-    public IEntity GetSuperEntity () {
+    public IEntity GetParent () {
 
-        return _super;
+        return _parent;
 
     }
 
@@ -332,11 +333,12 @@ public class Entity : IEntity {
 
     }
 
-    [Obsolete ("Use subEntity.SetSuperEntity(null) instead. This is strictly for internal purposes and using this may cause unwanted behaviours in your code.")]
-    [EditorBrowsable (EditorBrowsableState.Never)]
-    public bool RemoveSubEntity (IEntity sub) {
+    public bool RemoveChild (IEntity child) {
 
-        return _subs.Remove (sub);
+        if (!_children.Contains (child)) return false;
+
+        child.SetParent (null);
+        return _children.Remove (child);
 
     }
 
@@ -346,20 +348,20 @@ public class Entity : IEntity {
 
     }
 
-    public bool SetSuperEntity (IEntity super) {
+    public bool SetParent (IEntity parent) {
 
-        // If target super is null, set it
-        if (super == null) {
+        // If target parent is null, set it
+        if (parent == null) {
 
-            if (_super != null) _super.RemoveSubEntity (this);
-            _super = super;
+            if (_parent != null) _parent.RemoveChild (this);
+            _parent = parent;
             EntityViewer.GetInstance ().AddRootEntity (this);
             return true;
 
         }
 
-        // If the super is already super, there is no need to set it again
-        if (_super == super) return false;
+        // If the parent is already its parent, there is no need to set it again
+        if (_parent == parent) return false;
 
         // Checks if any succeeding entities is equal to super
         // If so, return false as to prevent cyclic graphs of entities
@@ -367,14 +369,14 @@ public class Entity : IEntity {
         queue.Enqueue (this);
         while (queue.Count != 0) {
             IEntity current = queue.Dequeue ();
-            if (current == super) return false;
-            foreach (IEntity e in current.GetSubEntities ()) queue.Enqueue (e);
+            if (current == parent) return false;
+            foreach (IEntity e in current.GetChildren ()) queue.Enqueue (e);
         }
 
-        // Set super to super
-        if (_super != null) _super.RemoveSubEntity (this);
-        _super = super;
-        _super.AddSubEntity (this);
+        // Set parent to parent
+        if (_parent != null) _parent.RemoveChild (this);
+        _parent = parent;
+        _parent.AddChild (this);
         EntityViewer.GetInstance ().RemoveRootEntity (this);
         return true;
 

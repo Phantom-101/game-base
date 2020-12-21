@@ -16,8 +16,10 @@ public class EntityViewer : MonoBehaviour {
     }
 
     private void Start () {
-        Entity root = new Entity ("A");
-        new Entity ("B", root);
+        Entity a = new Entity ("A");
+        Entity b = new Entity ("B", a);
+        Entity c = new Entity ("C", b);
+        Entity d = new Entity ("D", a);
     }
 
     public static EntityViewer GetInstance () {
@@ -29,7 +31,7 @@ public class EntityViewer : MonoBehaviour {
     public bool AddRootEntity (IEntity entity) {
 
         if (_roots.Contains (entity)) return false;
-        if (entity.GetSuperEntity () != null) return false;
+        if (entity.GetParent () != null) return false;
 
         _roots.Add (entity);
         return true;
