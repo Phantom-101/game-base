@@ -12,6 +12,12 @@ public interface IEntity {
     string GetName ();
 
     /// <summary>
+    /// Sets the name of the entity.
+    /// </summary>
+    /// <param name="name">The new name of the entity.</param>
+    void SetName (string name);
+
+    /// <summary>
     /// Returns the identifier of the entity. Note that an entity's identifier cannot be manually assigned and are instead randomly generated. An entity's identifier may not be the same as its name.
     /// </summary>
     /// <returns>A string containing the entity's identifier.</returns>
@@ -24,10 +30,31 @@ public interface IEntity {
     IEntity GetSuperEntity ();
 
     /// <summary>
+    /// Sets the super entity of the entity.
+    /// </summary>
+    /// <param name="super">The new super entity of the entity.</param>
+    /// <returns>A boolean denoting whether or not the super entity has been set successfully.</returns>
+    bool SetSuperEntity (IEntity super);
+
+    /// <summary>
     /// Returns the entity's subentities, i.e. its children.
     /// </summary>
     /// <returns>A list of instances of classes implementing IEntity representing the entity's subentities.</returns>
     List<IEntity> GetSubEntities ();
+
+    /// <summary>
+    /// Adds <paramref name="sub"/> as a sub entity;
+    /// </summary>
+    /// <param name="sub">The entity to add as a sub entity.</param>
+    /// <returns>A boolean denoting whether or not <paramref name="sub"/> was added as a sub entity successfully.</returns>
+    bool AddSubEntity (IEntity sub);
+
+    /// <summary>
+    /// Removes <paramref name="sub"/> as a sub entity;
+    /// </summary>
+    /// <param name="sub">The entity to remove as a sub entity.</param>
+    /// <returns>A boolean denoting whether or not <paramref name="sub"/> was removed as a sub entity successfully.</returns>
+    bool RemoveSubEntity (IEntity sub);
 
     /// <summary>
     /// Returns the behaviours attached to the entity.
@@ -41,7 +68,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the behaviour to return.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be returned.</param>
     /// <returns>A single instance of a class implementing IEntityBehaviour that is currently attached to the entity.</returns>
-    IEntityBehaviour GetBehaviour<T> (bool inherited);
+    IEntityBehaviour GetBehaviour<T> (bool inherited) where T : IEntityBehaviour;
 
     /// <summary>
     /// Returns all behaviours of type <typeparamref name="T"/> attached to the entity.
@@ -49,7 +76,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the behaviours to return.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be returned.</param>
     /// <returns>Multiple instance of classes implementing IEntityBehaviour that is currently attached to the entity.</returns>
-    List<IEntityBehaviour> GetAllBehaviours<T> (bool inherited);
+    List<IEntityBehaviour> GetAllBehaviours<T> (bool inherited) where T : IEntityBehaviour;
 
     /// <summary>
     /// Checks if <paramref name="behaviour"/> is currently attached to the entity.
@@ -64,7 +91,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of behaviours to check for.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be considered.</param>
     /// <returns>A boolean denoting whether or not a behaviour of type <typeparamref name="T"/> is currently attached to the entity.</returns>
-    bool PossessesBehaviour<T> (bool inherited);
+    bool PossessesBehaviour<T> (bool inherited) where T : IEntityBehaviour;
 
     /// <summary>
     /// Counts the number of behaviours that are currently attached to the entity.
@@ -78,7 +105,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of behaviours to check for.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be counted.</param>
     /// <returns>An integer denoting the number of behaviours of type <typeparamref name="T"/> that are currently attached to the entity.</returns>
-    int CountBehaviours<T> (bool inherited);
+    int CountBehaviours<T> (bool inherited) where T : IEntityBehaviour;
 
     /// <summary>
     /// Adds <paramref name="behaviour"/> to the entity.
@@ -107,7 +134,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the behaviour to remove from the entity.</typeparam>
     /// <param name="inherited">Denotes whether or not a behaviour inherited from type <typeparamref name="T"/> should be removed.</param>
     /// <returns>A boolean denoting whether or not a behaviour of type <typeparamref name="T"/> has been removed successfully.</returns>
-    bool RemoveBehaviour<T> (bool inherited);
+    bool RemoveBehaviour<T> (bool inherited) where T : IEntityBehaviour;
 
     /// <summary>
     /// Removes all behaviours of type <typeparamref name="T"/> from the entity.
@@ -115,7 +142,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the behaviours to remove from the entity.</typeparam>
     /// <param name="inherited">Denotes whether or not behaviours inherited from type <typeparamref name="T"/> should be removed.</param>
     /// <returns>A boolean denoting whether or not all behaviours of type <typeparamref name="T"/> has been removed successfully.</returns>
-    bool RemoveAllBehaviours<T> (bool inherited);
+    bool RemoveAllBehaviours<T> (bool inherited) where T : IEntityBehaviour;
 
     /// <summary>
     /// Returns the data attached to the entity.
@@ -129,7 +156,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the data to return.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be returned.</param>
     /// <returns>A single instance of a class implementing IEntityData that is currently attached to the entity.</returns>
-    IEntityData GetData<T> (bool inherited);
+    IEntityData GetData<T> (bool inherited) where T : IEntityData;
 
     /// <summary>
     /// Returns all data of type <typeparamref name="T"/> attached to the entity.
@@ -137,7 +164,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the data to return.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be returned.</param>
     /// <returns>Multiple instance of classes implementing IEntityData that is currently attached to the entity.</returns>
-    List<IEntityData> GetAllData<T> (bool inherited);
+    List<IEntityData> GetAllData<T> (bool inherited) where T : IEntityData;
 
     /// <summary>
     /// Checks if <paramref name="data"/> is currently attached to the entity.
@@ -152,7 +179,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of data to check for.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be considered.</param>
     /// <returns>A boolean denoting whether or not a data of type <typeparamref name="T"/> is currently attached to the entity.</returns>
-    bool PossessesData<T> (bool inherited);
+    bool PossessesData<T> (bool inherited) where T : IEntityData;
 
     /// <summary>
     /// Counts the number of data that are currently attached to the entity.
@@ -166,7 +193,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of data to check for.</typeparam>
     /// <param name="inherited">Denotes whether or not types inherited from type <typeparamref name="T"/> should be counted.</param>
     /// <returns>An integer denoting the number of data of type <typeparamref name="T"/> that are currently attached to the entity.</returns>
-    int CountData<T> ();
+    int CountData<T> (bool inherited) where T : IEntityData;
 
     /// <summary>
     /// Adds <paramref name="data"/> to the entity.
@@ -195,7 +222,7 @@ public interface IEntity {
     /// <typeparam name="T">The type of the data to remove from the entity.</typeparam>
     /// <param name="inherited">Denotes whether or not a data inherited from type <typeparamref name="T"/> should be removed.</param>
     /// <returns>A boolean denoting whether or not a data of type <typeparamref name="T"/> has been removed successfully.</returns>
-    bool RemoveData<T> (bool inherited);
+    bool RemoveData<T> (bool inherited) where T : IEntityData;
 
     /// <summary>
     /// Removes all data of type <typeparamref name="T"/> from the entity.
@@ -203,6 +230,6 @@ public interface IEntity {
     /// <typeparam name="T">The type of the data to remove from the entity.</typeparam>
     /// <param name="inherited">Denotes whether or not data inherited from type <typeparamref name="T"/> should be removed.</param>
     /// <returns>A boolean denoting whether or not all data of type <typeparamref name="T"/> has been removed successfully.</returns>
-    bool RemoveAllData<T> (bool inherited);
+    bool RemoveAllData<T> (bool inherited) where T : IEntityData;
 
 }
