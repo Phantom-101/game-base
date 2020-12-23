@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 
 public class Entity : IEntity {
 
-    [SerializeField] private string _name;
-    [SerializeField] private string _identifier;
+    [SerializeField] protected string _name;
+    [SerializeField] protected string _identifier;
 
-    [SerializeReference] private IEntity _parent;
-    [SerializeReference] private List<IEntity> _children;
+    [SerializeReference] protected IEntity _parent;
+    [SerializeReference] protected List<IEntity> _children;
 
-    [SerializeReference] private List<IEntityBehaviour> _behaviours;
-    private Dictionary<Type, List<IEntityBehaviour>> _typedBehaviours;
-    private Dictionary<Type, List<IEntityBehaviour>> _inheritedTypedBehaviours;
+    [SerializeReference] protected List<IEntityBehaviour> _behaviours;
+    protected Dictionary<Type, List<IEntityBehaviour>> _typedBehaviours;
+    protected Dictionary<Type, List<IEntityBehaviour>> _inheritedTypedBehaviours;
 
-    [SerializeReference] private List<IEntityData> _data;
-    private Dictionary<Type, List<IEntityData>> _typedData;
-    private Dictionary<Type, List<IEntityData>> _inheritedTypedData;
+    [SerializeReference] protected List<IEntityData> _data;
+    protected Dictionary<Type, List<IEntityData>> _typedData;
+    protected Dictionary<Type, List<IEntityData>> _inheritedTypedData;
 
     public Entity () : this ("New Entity") { }
 
@@ -51,6 +50,9 @@ public class Entity : IEntity {
 
         foreach (IEntityData d in data) AddData (d);
 
+        EntityList list = EntityList.GetInstance ();
+        if (list != null) list.AddEntity (this);
+
     }
 
     public bool AddBehaviour (IEntityBehaviour behaviour) {
@@ -67,6 +69,10 @@ public class Entity : IEntity {
         if (collidesWithSelf && _typedBehaviours.GetValueOrDefault (t, new List<IEntityBehaviour> ()).Count > 0) return false;
         if (collidesWithInherited && _inheritedTypedBehaviours.GetValueOrDefault (t, new List<IEntityBehaviour> ()).Count > 0) return false;
 
+        // Remove from previous entity
+        IEntity previous = behaviour.GetPossessingEntity ();
+        previous.RemoveBehaviour (behaviour);
+
         // Add and initialize
         _behaviours.Add (behaviour);
         _typedBehaviours.Initialize (t, new List<IEntityBehaviour> ());
@@ -77,6 +83,8 @@ public class Entity : IEntity {
             _inheritedTypedBehaviours.Initialize (cur, new List<IEntityBehaviour> ());
             _inheritedTypedBehaviours[cur].Add (behaviour);
         }
+
+        behaviour.AttachTo (this);
 
         return true;
 
@@ -114,6 +122,10 @@ public class Entity : IEntity {
         if (collidesWithSelf && _typedData.GetValueOrDefault (t, new List<IEntityData> ()).Count > 0) return false;
         if (collidesWithInherited && _inheritedTypedData.GetValueOrDefault (t, new List<IEntityData> ()).Count > 0) return false;
 
+        // Remove from previous entity
+        IEntity previous = data.GetPossessingEntity ();
+        previous.RemoveData (data);
+
         // Add and initialize
         _data.Add (data);
         _typedData.Initialize (t, new List<IEntityData> ());
@@ -124,6 +136,8 @@ public class Entity : IEntity {
             _inheritedTypedData.Initialize (cur, new List<IEntityData> ());
             _inheritedTypedData[cur].Add (data);
         }
+
+        data.AttachTo (this);
 
         return true;
 
@@ -355,7 +369,6 @@ public class Entity : IEntity {
 
             if (_parent != null) _parent.RemoveChild (this);
             _parent = parent;
-            EntityViewer.GetInstance ().AddRootEntity (this);
             return true;
 
         }
@@ -377,7 +390,6 @@ public class Entity : IEntity {
         if (_parent != null) _parent.RemoveChild (this);
         _parent = parent;
         _parent.AddChild (this);
-        EntityViewer.GetInstance ().RemoveRootEntity (this);
         return true;
 
     }

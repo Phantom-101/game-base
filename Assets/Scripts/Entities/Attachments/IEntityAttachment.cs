@@ -9,6 +9,13 @@ public interface IEntityAttachment {
     IEntity GetPossessingEntity ();
 
     /// <summary>
+    /// Attaches this attachment to an entity.
+    /// </summary>
+    /// <param name="entity">The entity to attach to.</param>
+    /// <returns>A boolean denoting whether or not the attachment has been successfully attached.</returns>
+    bool AttachTo (IEntity entity);
+
+    /// <summary>
     /// Returns a list of this entity's attachment collision modes.
     /// </summary>
     /// <returns>A list of entity attachment collision modes.</returns>

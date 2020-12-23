@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class EntityViewer : MonoBehaviour {
@@ -15,32 +15,39 @@ public class EntityViewer : MonoBehaviour {
 
     }
 
-    private void Start () {
-        Entity a = new Entity ("A");
-        Entity b = new Entity ("B", a);
-        Entity c = new Entity ("C", b);
-        Entity d = new Entity ("D", a);
-    }
-
     public static EntityViewer GetInstance () {
 
         return _instance;
 
     }
 
-    public bool AddRootEntity (IEntity entity) {
+    public void UpdateRoots () {
 
-        if (_roots.Contains (entity)) return false;
-        if (entity.GetParent () != null) return false;
+        EntityList list = EntityList.GetInstance ();
+        if (list == null) return;
 
-        _roots.Add (entity);
-        return true;
+        _roots = new List<IEntity> ();
+
+        foreach (IEntity entity in list.GetEntities ()) {
+
+            if (entity.GetParent () == null) _roots.Add (entity);
+
+        }
 
     }
 
-    public bool RemoveRootEntity (IEntity entity) {
+}
 
-        return _roots.Remove (entity);
+[CustomEditor (typeof (EntityViewer))]
+public class EntityViewerEditor : Editor {
+
+    public override void OnInspectorGUI () {
+
+        base.OnInspectorGUI ();
+
+        EntityViewer viewer = target as EntityViewer;
+
+        if (GUILayout.Button ("Update Roots")) viewer.UpdateRoots ();
 
     }
 

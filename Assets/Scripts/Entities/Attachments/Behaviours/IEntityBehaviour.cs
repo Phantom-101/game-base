@@ -10,4 +10,10 @@
     /// </summary>
     void OnUpdate ();
 
+    /// <summary>
+    /// Queries the tick length of this behaviour, i.e. how often its OnUpdate function should be called.
+    /// </summary>
+    /// <returns>A double representing the tick length of this behaviour.</returns>
+    float GetTickLength ();
+
 }
